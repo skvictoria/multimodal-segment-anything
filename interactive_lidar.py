@@ -2,6 +2,7 @@ import open3d as o3d
 import numpy as np
 import matplotlib.pyplot as plt
 from kittiObjectFinder import KittiObjectFinder
+from draw_bounding_box import bboxMaker
 
 def load_point_cloud(file_path):
     # Load the point cloud data from a file.
@@ -93,14 +94,21 @@ def main(file_path, all_objects):
     vis.run()  # User picks points here. This will block until the user exits the window.
     vis.destroy_window()
 
+    # pick points
     picked_points = vis.get_picked_points()
     for index in picked_points:
         print("Selected point coordinates:", np.asarray(colored_pcd.points)[index])
 
-    finder = KittiObjectFinder(annotation_file)
-    selected_objects = finder.find_objects_containing_points(picked_points, colored_pcd.points)
-    for obj in selected_objects:
-        print(obj)
+    finder = bboxMaker(annotation_file)
+    for index in picked_points:
+        finder._is_point_in_box(np.asarray(colored_pcd.points)[index])
+
+    ### not working because of coordinates..
+    # # 
+    # finder = KittiObjectFinder(annotation_file)
+    # selected_objects = finder.find_objects_containing_points(picked_points, colored_pcd.points)
+    # for obj in selected_objects:
+    #     print(obj)
 
 
 annotation_file = 'notebooks/label/002697.txt'  # Path to the annotation file
