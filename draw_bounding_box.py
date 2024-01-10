@@ -68,11 +68,20 @@ class bboxMaker:
         if len(parts) == 15:
             # Extract the relevant object parameters
             obj_type = parts[0]
+            if(parts[1] >0):
+                truncate = 1
+            if(parts[2]>0):
+                occlude = 1
+            
+            left, top, right, bottom = int(parts[4]), int(parts[5]), int(parts[6]), int(parts[7])
             h, w, l = float(parts[8]), float(parts[9]), float(parts[10])
             x, y, z = float(parts[11]), float(parts[12]), float(parts[13])
             ry = float(parts[14])
             return {
                 "type": obj_type,
+                "truncate":truncate,
+                "occlude":occlude,
+                "2dbox":
                 "dimensions": np.array([h, w, l]),
                 "center": np.array([x, y, z]),
                 "rotation_y": ry
@@ -119,6 +128,39 @@ class bboxMaker:
             for line in lines:
                 obj = self._parse_line(line)
                 if obj:
+                    # Compute the rotation matrix
+                    R = roty(obj["rotation_y"])
+                    
+                    # 3D bounding box corners in camera coordinate system
+                    #l, w, h = obj["dimensions"]
+                    h, w, l = obj["dimensions"]
+                    x_corners = [l / 2, l / 2, -l / 2, -l / 2, l / 2, l / 2, -l / 2, -l / 2]
+                    y_corners = [0, 0, 0, 0, -h, -h, -h, -h]
+                    z_corners = [w / 2, -w / 2, -w / 2, w / 2, w / 2, -w / 2, -w / 2, w / 2]
+                    # Rotate and translate 3D bounding box corners
+                    corners_3d_camera = np.dot(R, np.vstack([x_corners, y_corners, z_corners]))
+                    corners_3d_camera[0, :] += obj["center"][0]
+                    corners_3d_camera[1, :] += obj["center"][1]
+                    corners_3d_camera[2, :] += obj["center"][2]
+                    
+                    # Transform the corners to LiDAR coordinates
+                    corners_3d_lidar = np.zeros_like(corners_3d_camera)
+                    for i in range(8):
+                        corners_3d_lidar[:, i] = self.camera_to_lidar(
+                            corners_3d_camera[0, i], corners_3d_camera[1, i], corners_3d_camera[2, i]
+                        )
+                    
+                    # Store the transformed corners
+                    self.bbox_list.append(corners_3d_lidar.T)
+
+
+    def prompt_bbox_list_maker(self):
+        with open(self.annotation_file, 'r') as file:
+            lines = file.readlines()
+            for line in lines:
+                obj = self._parse_line(line)
+                if obj:
+                    
                     # Compute the rotation matrix
                     R = roty(obj["rotation_y"])
                     
