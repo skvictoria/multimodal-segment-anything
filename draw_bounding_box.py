@@ -125,10 +125,9 @@ class bboxMaker:
                     # 3D bounding box corners in camera coordinate system
                     #l, w, h = obj["dimensions"]
                     h, w, l = obj["dimensions"]
-                    x_corners = [l/2, l/2, -l/2, -l/2, l/2, l/2, -l/2, -l/2]
-                    y_corners = [-w/2, w/2, w/2, -w/2, -w/2, w/2, w/2, -w/2]
-                    z_corners = [0, 0, 0, 0, -h, -h, -h, -h]
-                    
+                    x_corners = [l / 2, l / 2, -l / 2, -l / 2, l / 2, l / 2, -l / 2, -l / 2]
+                    y_corners = [0, 0, 0, 0, -h, -h, -h, -h]
+                    z_corners = [w / 2, -w / 2, -w / 2, w / 2, w / 2, -w / 2, -w / 2, w / 2]
                     # Rotate and translate 3D bounding box corners
                     corners_3d_camera = np.dot(R, np.vstack([x_corners, y_corners, z_corners]))
                     corners_3d_camera[0, :] += obj["center"][0]
@@ -203,63 +202,47 @@ class bboxMaker:
                 z=z_coords,
                 mode='markers',
                 marker=dict(
-                    size=5,
+                    size=3,
                     color='red'
                 ),
             )
             plotly_fig.add_trace(bbox_vertices)
         # draw lines
-        # for vectors in self.bbox_list:
-        #     #vectors = bbox.get_box_points()
-        #     color_str = 'red'
-        #     lines_for_3dbbox = [
-        #             go.Scatter3d(x=[vectors[0][0], vectors[0][0]+0.1], 
-        #                         y=[vectors[0][1], vectors[0][1]+0.1], 
-        #                         z=[vectors[0][2], vectors[0][2]+0.1], mode='lines', line=dict(color=color_str)),
+        for vectors in self.bbox_list:
+            color_str = 'red'
+            lines_for_3dbbox = [
+                    go.Scatter3d(x=[vectors[0][0], vectors[1][0]], 
+                                y=[vectors[0][1], vectors[1][1]], 
+                                z=[vectors[0][2], vectors[1][2]], mode='lines', line=dict(color=color_str)),
             
-        #             go.Scatter3d(x=[vectors[1][0], vectors[1][0]+0.1], 
-        #                         y=[vectors[1][1], vectors[1][1]+0.1], 
-        #                         z=[vectors[1][2], vectors[1][2]+0.1], mode='lines', line=dict(color=color_str)),
+                    go.Scatter3d(x=[vectors[1][0], vectors[2][0]], 
+                                y=[vectors[1][1], vectors[2][1]], 
+                                z=[vectors[1][2], vectors[2][2]], mode='lines', line=dict(color=color_str)),
             
-        #             go.Scatter3d(x=[vectors[2][0], vectors[2][0]+0.1], 
-        #                         y=[vectors[2][1], vectors[2][1]+0.1], 
-        #                         z=[vectors[2][2], vectors[2][2]+0.1], mode='lines', line=dict(color=color_str)),
-        #             go.Scatter3d(x=[vectors[4][0], vectors[4][0]+0.1], 
-        #                         y=[vectors[4][1], vectors[4][1]+0.1], 
-        #                         z=[vectors[4][2], vectors[4][2]+0.1], mode='lines', line=dict(color=color_str)),
+                    go.Scatter3d(x=[vectors[2][0], vectors[3][0]], 
+                                y=[vectors[2][1], vectors[3][1]], 
+                                z=[vectors[2][2], vectors[3][2]], mode='lines', line=dict(color=color_str)),
+                    go.Scatter3d(x=[vectors[4][0], vectors[5][0]], 
+                                y=[vectors[4][1], vectors[5][1]], 
+                                z=[vectors[4][2], vectors[5][2]], mode='lines', line=dict(color=color_str)),
             
-        #             go.Scatter3d(x=[vectors[5][0], vectors[5][0]+0.1], 
-        #                         y=[vectors[5][1], vectors[5][1]+0.1], 
-        #                         z=[vectors[5][2], vectors[5][2]+0.1], mode='lines', line=dict(color=color_str)),
+                    go.Scatter3d(x=[vectors[5][0], vectors[6][0]], 
+                                y=[vectors[5][1], vectors[6][1]], 
+                                z=[vectors[5][2], vectors[6][2]], mode='lines', line=dict(color=color_str)),
             
-        #             go.Scatter3d(x=[vectors[6][0], vectors[6][0]+0.1], 
-        #                         y=[vectors[6][1], vectors[6][1]+0.1], 
-        #                         z=[vectors[6][2], vectors[6][2]+0.1], mode='lines', line=dict(color=color_str)),
-        #             # go.Scatter3d(x=[vectors[1][0], vectors[6][0]], 
-        #             #             y=[vectors[1][1], vectors[6][1]], 
-        #             #             z=[vectors[1][2], vectors[6][2]], mode='lines', line=dict(color=color_str)),
+                    go.Scatter3d(x=[vectors[6][0], vectors[7][0]], 
+                                y=[vectors[6][1], vectors[7][1]], 
+                                z=[vectors[6][2], vectors[7][2]], mode='lines', line=dict(color=color_str)),
+                    go.Scatter3d(x=[vectors[7][0], vectors[0][0]], 
+                                y=[vectors[7][1], vectors[0][1]], 
+                                z=[vectors[7][2], vectors[0][2]], mode='lines', line=dict(color=color_str)),
             
-        #             # go.Scatter3d(x=[vectors[1][0], vectors[7][0]], 
-        #             #             y=[vectors[1][1], vectors[7][1]], 
-        #             #             z=[vectors[1][2], vectors[7][2]], mode='lines', line=dict(color=color_str)),
-            
-        #             # go.Scatter3d(x=[vectors[2][0], vectors[5][0]], 
-        #             #             y=[vectors[2][1], vectors[5][1]], 
-        #             #             z=[vectors[2][2], vectors[5][2]], mode='lines', line=dict(color=color_str)),
-        #             go.Scatter3d(x=[vectors[7][0], vectors[7][0]+0.1], 
-        #                         y=[vectors[7][1], vectors[7][1]+0.1], 
-        #                         z=[vectors[7][2], vectors[7][2]+0.1], mode='lines', line=dict(color=color_str)),
-            
-        #             go.Scatter3d(x=[vectors[3][0], vectors[3][0]+0.1], 
-        #                         y=[vectors[3][1], vectors[3][1]+0.1], 
-        #                         z=[vectors[3][2], vectors[3][2]+0.1], mode='lines', line=dict(color=color_str)),
-            
-        #             # go.Scatter3d(x=[vectors[3][0], vectors[6][0]], 
-        #             #             y=[vectors[3][1], vectors[6][1]], 
-        #             #             z=[vectors[3][2], vectors[6][2]], mode='lines', line=dict(color=color_str))
-        #     ]
-        #     for line in lines_for_3dbbox:
-        #         plotly_fig.add_trace(line)
+                    go.Scatter3d(x=[vectors[3][0], vectors[7][0]], 
+                                y=[vectors[3][1], vectors[7][1]], 
+                                z=[vectors[3][2], vectors[7][2]], mode='lines', line=dict(color=color_str)),
+            ]
+            for line in lines_for_3dbbox:
+                plotly_fig.add_trace(line)
 
         
         if coordinate_frame:
