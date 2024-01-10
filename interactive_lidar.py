@@ -99,7 +99,7 @@ def main(file_path, all_objects):
     for index in picked_points:
         print("Selected point coordinates:", np.asarray(colored_pcd.points)[index])
 
-    finder = bboxMaker(annotation_file)
+    finder = bboxMaker(annotation_file, calib_file)
     for index in picked_points:
         finder._is_point_in_box(np.asarray(colored_pcd.points)[index])
 
@@ -112,6 +112,7 @@ def main(file_path, all_objects):
 
 
 annotation_file = 'notebooks/label/002697.txt'  # Path to the annotation file
+calib_file = 'notebooks/calib/002697.txt'       # Path to the calibration file
 finder = KittiObjectFinder(annotation_file)
 all_objects = finder.find_objects_with_labels()
 

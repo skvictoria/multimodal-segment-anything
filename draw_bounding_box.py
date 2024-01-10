@@ -289,24 +289,26 @@ class bboxMaker:
         # Show the plot
         plotly_fig.show()
 
-BIN = 1
-PCD = 0
+if __name__=="__main__":
+    BIN = 1
+    PCD = 0
 
-lidar_path = "./notebooks"
-num = "002697"
+    lidar_path = "./notebooks"
+    num = "002697"
 
-if (BIN):
-    bin_path = os.path.join(lidar_path, "velodyne")
-    numpy_path = np.fromfile(os.path.join(bin_path, num+".bin"), dtype=np.float32).reshape((-1,4))
-    #numpy_path = numpy_path[:,:3]
-    #pcd = o3d.geometry.PointCloud()
-    #pcd.points = o3d.utility.Vector3dVector(numpy_path)
-elif (PCD):
-    pcd_path = os.path.join(lidar_path, "pcd", num+".pcd")
-    pcd = o3d.io.read_point_cloud(pcd_path)
+    if (BIN):
+        bin_path = os.path.join(lidar_path, "velodyne")
+        numpy_path = np.fromfile(os.path.join(bin_path, num+".bin"), dtype=np.float32).reshape((-1,4))
+        #numpy_path = numpy_path[:,:3]
+        #pcd = o3d.geometry.PointCloud()
+        #pcd.points = o3d.utility.Vector3dVector(numpy_path)
+    elif (PCD):
+        pcd_path = os.path.join(lidar_path, "pcd", num+".pcd")
+        pcd = o3d.io.read_point_cloud(pcd_path)
 
 
-#pcd_array = np.asarray(pcd.points)
-annotation_file = 'notebooks/label/002697.txt'
-bboxmaker = bboxMaker(annotation_file)
-bboxmaker.show_point_cloud(numpy_path)
+    #pcd_array = np.asarray(pcd.points)
+    annotation_file = 'notebooks/label/002697.txt'
+    calib_file = annotation_file.replace('label', 'calib')
+    bboxmaker = bboxMaker(annotation_file, calib_file)
+    bboxmaker.show_point_cloud(numpy_path)
