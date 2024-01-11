@@ -68,12 +68,16 @@ class bboxMaker:
         if len(parts) == 15:
             # Extract the relevant object parameters
             obj_type = parts[0]
-            if(parts[1] >0):
+            if(float(parts[1]) >=0.5):
                 truncate = 1
-            if(parts[2]>0):
+            else:
+                truncate = 0
+            if(int(parts[2])>1):
                 occlude = 1
+            else:
+                occlude = 0
             
-            left, top, right, bottom = int(parts[4]), int(parts[5]), int(parts[6]), int(parts[7])
+            left, top, right, bottom = float(parts[4]), float(parts[5]), float(parts[6]), float(parts[7])
             h, w, l = float(parts[8]), float(parts[9]), float(parts[10])
             x, y, z = float(parts[11]), float(parts[12]), float(parts[13])
             ry = float(parts[14])
@@ -81,7 +85,7 @@ class bboxMaker:
                 "type": obj_type,
                 "truncate":truncate,
                 "occlude":occlude,
-                "2dbox":
+                "2dbox": np.array([left, top, right, bottom]),
                 "dimensions": np.array([h, w, l]),
                 "center": np.array([x, y, z]),
                 "rotation_y": ry
@@ -160,6 +164,9 @@ class bboxMaker:
             for line in lines:
                 obj = self._parse_line(line)
                 if obj:
+                    # if no problem at all
+                    if(obj["truncate"] == 0 and obj["occlude"]==0):
+                        continue
                     
                     # Compute the rotation matrix
                     R = roty(obj["rotation_y"])
@@ -227,7 +234,7 @@ class bboxMaker:
         )
 
         # draw bounding box
-        self.bbox_list_maker()
+        self.prompt_bbox_list_maker()
         for vectors in self.bbox_list:
         
             x_coords = [point[0] for point in vectors]
@@ -248,7 +255,7 @@ class bboxMaker:
                     color='red'
                 ),
             )
-            plotly_fig.add_trace(bbox_vertices)
+            #plotly_fig.add_trace(bbox_vertices)
         # draw lines
         for vectors in self.bbox_list:
             color_str = 'red'
